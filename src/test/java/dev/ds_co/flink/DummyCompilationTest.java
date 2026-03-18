@@ -1,6 +1,6 @@
-package dev.dss_co.flink;
+package dev.ds_co.flink;
 
-import dev.dss_co.flink.streaming.api.operators.DummyMultiInputStub;
+import dev.ds_co.flink.streaming.api.operators.DummyMultiInputStub;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

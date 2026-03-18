@@ -1,4 +1,4 @@
-package dev.dss_co.flink.streaming.api.operators;
+package dev.ds_co.flink.streaming.api.operators;
 
 import org.apache.flink.streaming.api.operators.AbstractStreamOperatorV2;
 import org.apache.flink.streaming.api.operators.StreamOperatorParameters;
