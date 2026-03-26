@@ -44,8 +44,7 @@ public class MultiInputITCase {
 
     builder.addInput(xs, X::getKey).addInput(ys, Y::getKey).addInput(zs, Z::getKey);
 
-    SingleOutputStreamOperator<Out> joined =
-        (SingleOutputStreamOperator<Out>) builder.build("xyz-join");
+    SingleOutputStreamOperator<Out> joined = builder.build("xyz-join");
 
     DataStream<String> side = joined.getSideOutput(KeyedThreeInputOperator.JOINED_KEYS);
 

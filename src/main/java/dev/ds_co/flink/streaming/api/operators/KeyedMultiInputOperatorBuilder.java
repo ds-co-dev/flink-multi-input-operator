@@ -58,7 +58,11 @@ public class KeyedMultiInputOperatorBuilder<K, OUT> {
     return this;
   }
 
-  public DataStream<OUT> build(String uid) {
+  public SingleOutputStreamOperator<OUT> build(String uid) {
+    if (streams.isEmpty()) {
+      throw new IllegalStateException("At least one input must be added before calling build()");
+    }
+
     final int parallelism = env.getParallelism();
 
     KeyedMultipleInputTransformation<OUT> t =

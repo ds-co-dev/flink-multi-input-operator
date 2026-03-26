@@ -4,7 +4,7 @@ import org.apache.flink.streaming.api.operators.AbstractStreamOperatorFactory;
 import org.apache.flink.streaming.api.operators.StreamOperator;
 import org.apache.flink.streaming.api.operators.StreamOperatorParameters;
 
-class MultiInputOperatorFactory<OUT> extends AbstractStreamOperatorFactory<OUT> {
+public class MultiInputOperatorFactory<OUT> extends AbstractStreamOperatorFactory<OUT> {
 
   private final Class<? extends StreamOperator<OUT>> operatorClass;
 
