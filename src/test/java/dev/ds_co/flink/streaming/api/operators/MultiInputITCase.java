@@ -71,6 +71,35 @@ class MultiInputITCase {
   }
 
   @Test
+  void testBroadcastInput() throws Exception {
+    KeyedMultiInputOperatorBuilder<String, Out> builder =
+        new KeyedMultiInputOperatorBuilder<>(
+            env, KeyedNInputOperator.class, TypeInformation.of(Out.class), Types.STRING);
+
+    DataStream<String> config = env.fromData("ignored-1", "ignored-2");
+
+    builder
+        .addInput(xs, X::getKey)
+        .addInput(ys, Y::getKey)
+        .addInput(zs, Z::getKey)
+        .addBroadcastInput(config);
+
+    DataStream<Out> joined = builder.build("broadcast-test");
+
+    TestListResultSink<Out> resultSink = new TestListResultSink<>();
+    joined.addSink(resultSink);
+
+    env.execute("Broadcast Input Test");
+
+    List<Out> result = resultSink.getResult();
+    result.sort(Comparator.comparing(Out::getId).thenComparing(Out::getSum));
+
+    assertEquals(2, result.size());
+    assertEquals(new Out("a", 60), result.get(0));
+    assertEquals(new Out("b", 600), result.get(1));
+  }
+
+  @Test
   void testKeyedNWayJoin() throws Exception {
     KeyedMultiInputOperatorBuilder<String, Out> builder =
         new KeyedMultiInputOperatorBuilder<>(

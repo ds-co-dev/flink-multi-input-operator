@@ -20,7 +20,7 @@ public class KeyedNInputOperator extends KeyedMultiInputOperatorN<Out> {
   private transient ValueState<Integer> lastZ;
 
   public KeyedNInputOperator(StreamOperatorParameters<Out> params) {
-    super(params, 3);
+    super(params, params.getStreamConfig().getNumberOfNetworkInputs());
   }
 
   @Override
@@ -57,7 +57,7 @@ public class KeyedNInputOperator extends KeyedMultiInputOperatorN<Out> {
         processElement3((Z) value, ctx, out);
         break;
       default:
-        throw new IllegalArgumentException("Unexpected input index: " + inputIndex);
+        break;
     }
   }
 
