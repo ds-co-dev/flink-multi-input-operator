@@ -6,6 +6,7 @@ import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.streaming.api.operators.StreamOperatorParameters;
 import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 
 /**
  * Example of three-way keyed join:
@@ -17,6 +18,8 @@ import org.apache.flink.util.Collector;
  * processElement3(Z value, Context ctx, Collector<Out> out)
  */
 public class KeyedThreeInputOperator extends KeyedMultiInputOperator3<X, Y, Z, Out> {
+
+  public static final OutputTag<String> JOINED_KEYS = new OutputTag<String>("joined-keys") {};
 
   private transient ValueState<Integer> lastX;
   private transient ValueState<Integer> lastY;
@@ -73,6 +76,7 @@ public class KeyedThreeInputOperator extends KeyedMultiInputOperator3<X, Y, Z, O
     if (a != null && b != null && c != null) {
       String key = ctx.getCurrentKey(String.class);
       out.collect(new Out(key, a + b + c));
+      ctx.output(JOINED_KEYS, key);
     }
   }
 }

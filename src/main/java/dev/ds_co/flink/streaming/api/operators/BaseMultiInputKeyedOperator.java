@@ -16,6 +16,7 @@ import org.apache.flink.streaming.api.operators.TimestampedCollector;
 import org.apache.flink.streaming.api.operators.Triggerable;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 
 public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOperatorV2<OUT>
     implements MultipleInputStreamOperator<OUT>, Triggerable<Object, VoidNamespace> {
@@ -74,6 +75,11 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
 
     public void deleteEventTimeTimer(long ts) {
       timerService.deleteEventTimeTimer(VoidNamespace.INSTANCE, ts);
+    }
+
+    public <X> void output(OutputTag<X> tag, X value) {
+      long ts = timestamp == null ? Long.MIN_VALUE : timestamp;
+      BaseMultiInputKeyedOperator.this.output.collect(tag, new StreamRecord<>(value, ts));
     }
   }
 
