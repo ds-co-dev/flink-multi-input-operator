@@ -1,6 +1,6 @@
 package dev.ds_co.flink.streaming.api.operators;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import dev.ds_co.flink.streaming.api.operators.testing.KeyedNInputOperator;
 import dev.ds_co.flink.streaming.api.operators.testing.KeyedThreeInputOperator;
@@ -16,18 +16,18 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.test.streaming.runtime.util.TestListResultSink;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class MultiInputITCase {
+class MultiInputITCase {
 
   StreamExecutionEnvironment env;
   DataStream<X> xs;
   DataStream<Y> ys;
   DataStream<Z> zs;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     env = StreamExecutionEnvironment.getExecutionEnvironment();
     env.setParallelism(2);
 
@@ -37,7 +37,7 @@ public class MultiInputITCase {
   }
 
   @Test
-  public void testKeyedThreeWayJoin() throws Exception {
+  void testKeyedThreeWayJoin() throws Exception {
     KeyedMultiInputOperatorBuilder<String, Out> builder =
         new KeyedMultiInputOperatorBuilder<>(
             env, KeyedThreeInputOperator.class, TypeInformation.of(Out.class), Types.STRING);
@@ -71,7 +71,7 @@ public class MultiInputITCase {
   }
 
   @Test
-  public void testKeyedNWayJoin() throws Exception {
+  void testKeyedNWayJoin() throws Exception {
     KeyedMultiInputOperatorBuilder<String, Out> builder =
         new KeyedMultiInputOperatorBuilder<>(
             env, KeyedNInputOperator.class, TypeInformation.of(Out.class), Types.STRING);
@@ -83,7 +83,7 @@ public class MultiInputITCase {
     TestListResultSink<Out> resultSink = new TestListResultSink<>();
     joined.addSink(resultSink);
 
-    env.execute("Keyed Three-Way Join Test");
+    env.execute("Keyed N-Way Join Test");
 
     List<Out> result = resultSink.getResult();
     result.sort(Comparator.comparing(Out::getId).thenComparing(Out::getSum));
