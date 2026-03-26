@@ -2,7 +2,12 @@ package dev.ds_co.flink.streaming.api.operators;
 
 import static org.junit.Assert.assertEquals;
 
-import dev.ds_co.flink.streaming.api.operators.testing.*;
+import dev.ds_co.flink.streaming.api.operators.testing.KeyedNInputOperator;
+import dev.ds_co.flink.streaming.api.operators.testing.KeyedThreeInputOperator;
+import dev.ds_co.flink.streaming.api.operators.testing.Out;
+import dev.ds_co.flink.streaming.api.operators.testing.X;
+import dev.ds_co.flink.streaming.api.operators.testing.Y;
+import dev.ds_co.flink.streaming.api.operators.testing.Z;
 import java.util.Comparator;
 import java.util.List;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
