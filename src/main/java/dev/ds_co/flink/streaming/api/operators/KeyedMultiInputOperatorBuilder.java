@@ -52,12 +52,6 @@ public class KeyedMultiInputOperatorBuilder<K, OUT> {
     return this;
   }
 
-  public KeyedMultiInputOperatorBuilder<K, OUT> addBroadcastInput(DataStream<?> stream) {
-    streams.add(stream);
-    keySelectors.add(null);
-    return this;
-  }
-
   public SingleOutputStreamOperator<OUT> build(String uid) {
     if (streams.isEmpty()) {
       throw new IllegalStateException("At least one input must be added before calling build()");
