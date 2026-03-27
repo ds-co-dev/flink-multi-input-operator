@@ -48,8 +48,8 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
 
     private final Long timestamp;
 
-    private Context(long ts) {
-      this.timestamp = (ts == Long.MIN_VALUE ? null : ts);
+    private Context(long timestamp) {
+      this.timestamp = (timestamp == Long.MIN_VALUE ? null : timestamp);
     }
 
     public Long timestamp() {
@@ -61,25 +61,25 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
       return (K) BaseMultiInputKeyedOperator.this.getCurrentKey();
     }
 
-    public void registerProcessingTimeTimer(long ts) {
-      timerService.registerProcessingTimeTimer(VoidNamespace.INSTANCE, ts);
+    public void registerProcessingTimeTimer(long timestamp) {
+      timerService.registerProcessingTimeTimer(VoidNamespace.INSTANCE, timestamp);
     }
 
-    public void registerEventTimeTimer(long ts) {
-      timerService.registerEventTimeTimer(VoidNamespace.INSTANCE, ts);
+    public void registerEventTimeTimer(long timestamp) {
+      timerService.registerEventTimeTimer(VoidNamespace.INSTANCE, timestamp);
     }
 
-    public void deleteProcessingTimeTimer(long ts) {
-      timerService.deleteProcessingTimeTimer(VoidNamespace.INSTANCE, ts);
+    public void deleteProcessingTimeTimer(long timestamp) {
+      timerService.deleteProcessingTimeTimer(VoidNamespace.INSTANCE, timestamp);
     }
 
-    public void deleteEventTimeTimer(long ts) {
-      timerService.deleteEventTimeTimer(VoidNamespace.INSTANCE, ts);
+    public void deleteEventTimeTimer(long timestamp) {
+      timerService.deleteEventTimeTimer(VoidNamespace.INSTANCE, timestamp);
     }
 
     public <X> void output(OutputTag<X> tag, X value) {
-      long ts = timestamp == null ? Long.MIN_VALUE : timestamp;
-      BaseMultiInputKeyedOperator.this.output.collect(tag, new StreamRecord<>(value, ts));
+      long timestamp = this.timestamp == null ? Long.MIN_VALUE : this.timestamp;
+      BaseMultiInputKeyedOperator.this.output.collect(tag, new StreamRecord<>(value, timestamp));
     }
   }
 
@@ -87,8 +87,8 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
   public class OnTimerContext extends Context {
     private final TimeDomain domain;
 
-    private OnTimerContext(long ts, TimeDomain domain) {
-      super(ts);
+    private OnTimerContext(long timestamp, TimeDomain domain) {
+      super(timestamp);
       this.domain = domain;
     }
 
