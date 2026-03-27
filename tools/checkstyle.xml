@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+	"-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+	"http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<!--
+Checkstyle configuration based on Apache Flink's rules (tools/maven/checkstyle.xml).
+Flink-internal rules (shaded packages, Guava/Mockito bans, etc.) removed.
+Javadoc rules excluded for now.
+-->
+
+<module name="Checker">
+
+	<module name="RegexpSingleline">
+		<property name="format" value="\s+$"/>
+		<property name="message" value="Trailing whitespace"/>
+		<property name="severity" value="error"/>
+	</module>
+
+	<module name="FileLength">
+		<property name="max" value="3100"/>
+	</module>
+
+	<module name="TreeWalker">
+
+		<module name="SuppressionCommentFilter">
+			<property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
+			<property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
+			<property name="checkFormat" value="$1"/>
+		</module>
+
+		<module name="ArrayTypeStyle"/>
+
+		<!--
+
+		IMPORT CHECKS
+
+		-->
+
+		<module name="AvoidStarImport">
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="RedundantModifier">
+			<property name="tokens"
+					  value="VARIABLE_DEF, ANNOTATION_FIELD_DEF, INTERFACE_DEF, CLASS_DEF, ENUM_DEF"/>
+		</module>
+
+		<!--
+
+		NAMING CHECKS
+
+		-->
+
+		<module name="PackageName">
+			<property name="format" value="^[a-z]+(\.[a-z][a-z0-9_]{1,})*$"/>
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="TypeNameCheck">
+			<metadata name="altname" value="TypeName"/>
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="ConstantNameCheck">
+			<metadata name="altname" value="ConstantName"/>
+			<property name="applyToPublic" value="true"/>
+			<property name="applyToProtected" value="true"/>
+			<property name="applyToPackage" value="true"/>
+			<property name="applyToPrivate" value="false"/>
+			<property name="format" value="^([A-Z][A-Z0-9]*(_[A-Z0-9]+)*|FLAG_.*)$"/>
+			<message key="name.invalidPattern"
+					 value="Variable ''{0}'' should be in ALL_CAPS (if it is a constant) or be private (otherwise)."/>
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="StaticVariableNameCheck">
+			<metadata name="altname" value="StaticVariableName"/>
+			<property name="applyToPublic" value="true"/>
+			<property name="applyToProtected" value="true"/>
+			<property name="applyToPackage" value="true"/>
+			<property name="applyToPrivate" value="true"/>
+			<property name="format" value="^[a-z][a-zA-Z0-9]*_?$"/>
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="MemberNameCheck">
+			<metadata name="altname" value="MemberName"/>
+			<property name="applyToPublic" value="true"/>
+			<property name="applyToProtected" value="true"/>
+			<property name="applyToPackage" value="true"/>
+			<property name="applyToPrivate" value="true"/>
+			<property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="MethodNameCheck">
+			<metadata name="altname" value="MethodName"/>
+			<property name="format" value="^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$"/>
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="ParameterName">
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="LocalFinalVariableName">
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="LocalVariableName">
+			<property name="severity" value="error"/>
+		</module>
+
+		<!--
+
+		LENGTH and CODING CHECKS
+
+		-->
+
+		<module name="NeedBraces">
+			<property name="severity" value="error"/>
+			<property name="tokens"
+					  value="LITERAL_IF, LITERAL_ELSE, LITERAL_FOR, LITERAL_WHILE, LITERAL_DO"/>
+		</module>
+
+		<module name="UpperEll">
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="FallThrough">
+			<property name="reliefPattern"
+					  value="fall through|Fall through|fallthru|Fallthru|falls through|Falls through|fallthrough|Fallthrough|No break|NO break|no break|continue on"/>
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="SimplifyBooleanExpression"/>
+
+		<module name="EmptyStatement"/>
+
+		<module name="RegexpSinglelineJava">
+			<property name="format" value=";{2,}"/>
+			<property name="message" value="Use one semicolon"/>
+			<property name="ignoreComments" value="true"/>
+		</module>
+
+		<!--
+
+		WHITESPACE CHECKS
+
+		-->
+
+		<module name="EmptyLineSeparator">
+			<property name="allowMultipleEmptyLines" value="false"/>
+			<property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+			<property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT, CLASS_DEF,
+        INTERFACE_DEF, ENUM_DEF, STATIC_INIT, INSTANCE_INIT, METHOD_DEF,
+        CTOR_DEF"/>
+		</module>
+	</module>
+</module>

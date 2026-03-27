@@ -5,14 +5,25 @@ import java.util.List;
 import org.apache.flink.runtime.state.VoidNamespace;
 import org.apache.flink.runtime.state.VoidNamespaceSerializer;
 import org.apache.flink.streaming.api.TimeDomain;
-import org.apache.flink.streaming.api.operators.*;
+import org.apache.flink.streaming.api.operators.AbstractInput;
+import org.apache.flink.streaming.api.operators.AbstractStreamOperatorV2;
+import org.apache.flink.streaming.api.operators.Input;
+import org.apache.flink.streaming.api.operators.InternalTimer;
+import org.apache.flink.streaming.api.operators.InternalTimerService;
+import org.apache.flink.streaming.api.operators.MultipleInputStreamOperator;
+import org.apache.flink.streaming.api.operators.StreamOperatorParameters;
+import org.apache.flink.streaming.api.operators.TimestampedCollector;
+import org.apache.flink.streaming.api.operators.Triggerable;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 
 public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOperatorV2<OUT>
     implements MultipleInputStreamOperator<OUT>, Triggerable<Object, VoidNamespace> {
 
   private static final long serialVersionUID = 1L;
+
+  private static final long NO_TIMESTAMP = Long.MIN_VALUE;
 
   protected transient Collector<OUT> out;
   private transient InternalTimerService<VoidNamespace> timerService;
@@ -37,14 +48,18 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
 
   public class Context {
 
-    private final Long timestamp;
+    private final long timestamp;
 
-    private Context(long ts) {
-      this.timestamp = (ts == Long.MIN_VALUE ? null : ts);
+    private Context(long timestamp) {
+      this.timestamp = timestamp;
     }
 
-    public Long timestamp() {
+    public long timestamp() {
       return timestamp;
+    }
+
+    public boolean hasTimestamp() {
+      return timestamp != NO_TIMESTAMP;
     }
 
     @SuppressWarnings("unchecked")
@@ -52,20 +67,24 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
       return (K) BaseMultiInputKeyedOperator.this.getCurrentKey();
     }
 
-    public void registerProcessingTimeTimer(long ts) {
-      timerService.registerProcessingTimeTimer(VoidNamespace.INSTANCE, ts);
+    public void registerProcessingTimeTimer(long timestamp) {
+      timerService.registerProcessingTimeTimer(VoidNamespace.INSTANCE, timestamp);
     }
 
-    public void registerEventTimeTimer(long ts) {
-      timerService.registerEventTimeTimer(VoidNamespace.INSTANCE, ts);
+    public void registerEventTimeTimer(long timestamp) {
+      timerService.registerEventTimeTimer(VoidNamespace.INSTANCE, timestamp);
     }
 
-    public void deleteProcessingTimeTimer(long ts) {
-      timerService.deleteProcessingTimeTimer(VoidNamespace.INSTANCE, ts);
+    public void deleteProcessingTimeTimer(long timestamp) {
+      timerService.deleteProcessingTimeTimer(VoidNamespace.INSTANCE, timestamp);
     }
 
-    public void deleteEventTimeTimer(long ts) {
-      timerService.deleteEventTimeTimer(VoidNamespace.INSTANCE, ts);
+    public void deleteEventTimeTimer(long timestamp) {
+      timerService.deleteEventTimeTimer(VoidNamespace.INSTANCE, timestamp);
+    }
+
+    public <X> void output(OutputTag<X> tag, X value) {
+      BaseMultiInputKeyedOperator.this.output.collect(tag, new StreamRecord<>(value, timestamp));
     }
   }
 
@@ -73,8 +92,8 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
   public class OnTimerContext extends Context {
     private final TimeDomain domain;
 
-    private OnTimerContext(long ts, TimeDomain domain) {
-      super(ts);
+    private OnTimerContext(long timestamp, TimeDomain domain) {
+      super(timestamp);
       this.domain = domain;
     }
 
@@ -84,7 +103,7 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
   }
 
   protected Context ctx(StreamRecord<?> record) {
-    return new Context(record.getTimestamp());
+    return new Context(record.hasTimestamp() ? record.getTimestamp() : NO_TIMESTAMP);
   }
 
   //
