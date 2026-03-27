@@ -23,6 +23,8 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
 
   private static final long serialVersionUID = 1L;
 
+  private static final long NO_TIMESTAMP = Long.MIN_VALUE;
+
   protected transient Collector<OUT> out;
   private transient InternalTimerService<VoidNamespace> timerService;
 
@@ -46,14 +48,18 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
 
   public class Context {
 
-    private final Long timestamp;
+    private final long timestamp;
 
     private Context(long timestamp) {
-      this.timestamp = (timestamp == Long.MIN_VALUE ? null : timestamp);
+      this.timestamp = timestamp;
     }
 
-    public Long timestamp() {
+    public long timestamp() {
       return timestamp;
+    }
+
+    public boolean hasTimestamp() {
+      return timestamp != NO_TIMESTAMP;
     }
 
     @SuppressWarnings("unchecked")
@@ -78,7 +84,6 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
     }
 
     public <X> void output(OutputTag<X> tag, X value) {
-      long timestamp = this.timestamp == null ? Long.MIN_VALUE : this.timestamp;
       BaseMultiInputKeyedOperator.this.output.collect(tag, new StreamRecord<>(value, timestamp));
     }
   }
@@ -98,7 +103,7 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
   }
 
   protected Context ctx(StreamRecord<?> record) {
-    return new Context(record.getTimestamp());
+    return new Context(record.hasTimestamp() ? record.getTimestamp() : NO_TIMESTAMP);
   }
 
   //
