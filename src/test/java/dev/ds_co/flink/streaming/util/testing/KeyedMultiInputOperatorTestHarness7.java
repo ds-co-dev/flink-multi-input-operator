@@ -8,13 +8,11 @@ import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.ClosureCleaner;
 import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.streaming.api.operators.MultipleInputStreamOperator;
-import org.apache.flink.streaming.api.operators.StreamOperator;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
-import org.apache.flink.streaming.util.AbstractStreamOperatorTestHarness;
+import org.apache.flink.streaming.util.MultiInputStreamOperatorTestHarness;
 
 public class KeyedMultiInputOperatorTestHarness7<K, IN1, IN2, IN3, IN4, IN5, IN6, IN7, OUT>
-    extends AbstractStreamOperatorTestHarness<OUT> {
+    extends MultiInputStreamOperatorTestHarness<OUT> {
 
   public KeyedMultiInputOperatorTestHarness7(
       Class<? extends KeyedMultiInputOperator7<IN1, IN2, IN3, IN4, IN5, IN6, IN7, OUT>>
@@ -79,25 +77,6 @@ public class KeyedMultiInputOperatorTestHarness7<K, IN1, IN2, IN3, IN4, IN5, IN6
     config.setStateKeySerializer(
         keyTypeInfo.createSerializer(executionConfig.getSerializerConfig()));
     config.serializeAllConfigs();
-  }
-
-  private MultipleInputStreamOperator<OUT> getMultiInputOperator() {
-    StreamOperator<?> op = operator;
-    if (op instanceof MultipleInputStreamOperator) {
-      return (MultipleInputStreamOperator<OUT>) op;
-    }
-    throw new IllegalStateException(
-        "Operator is not a MultipleInputStreamOperator: " + op.getClass().getName());
-  }
-
-  private void processElement(int inputIndex, StreamRecord<?> record) throws Exception {
-    MultipleInputStreamOperator<OUT> op = getMultiInputOperator();
-    List<org.apache.flink.streaming.api.operators.Input> inputs = op.getInputs();
-    if (inputIndex < 0 || inputIndex >= inputs.size()) {
-      throw new IllegalArgumentException(
-          "Input index " + inputIndex + " out of range [0, " + inputs.size() + ")");
-    }
-    inputs.get(inputIndex).processElement(record);
   }
 
   public void processElement1(StreamRecord<IN1> record) throws Exception {
