@@ -10,16 +10,14 @@ import org.apache.flink.util.Collector;
 public abstract class KeyedMultiInputOperator3<IN1, IN2, IN3, OUT>
     extends BaseMultiInputKeyedOperator<OUT> {
 
+  private static final long serialVersionUID = 1L;
+
   protected KeyedMultiInputOperator3(StreamOperatorParameters<OUT> params) {
     super(params, 3);
     addInputHandler(in1);
     addInputHandler(in2);
     addInputHandler(in3);
   }
-
-  //
-  // Abstract per-input handlers
-  //
 
   protected abstract void processElement1(IN1 value, Context ctx, Collector<OUT> out)
       throws Exception;
@@ -29,10 +27,6 @@ public abstract class KeyedMultiInputOperator3<IN1, IN2, IN3, OUT>
 
   protected abstract void processElement3(IN3 value, Context ctx, Collector<OUT> out)
       throws Exception;
-
-  //
-  // Wiring: inputs that delegate to the abstract handlers
-  //
 
   private final AbstractInput<IN1, OUT> in1 =
       new AbstractInput<>(this, 1) {

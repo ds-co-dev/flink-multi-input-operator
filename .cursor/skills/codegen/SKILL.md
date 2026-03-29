@@ -1,7 +1,7 @@
 ---
 name: codegen-keyed-multi-input
 description: >-
-  Regenerates KeyedMultiInputOperator4-25 and KeyedMultiInputOperatorTestHarness3-25 from Java
+  Regenerates KeyedMultiInputOperator3-25 and KeyedMultiInputOperatorTestHarness3-25 from Java
   scripts. Use when changing operator or harness templates, fixing generated output, or after
   edits to scripts/GenerateOperators.java or scripts/GenerateTestHarnesses.java.
 ---
@@ -19,7 +19,7 @@ description: >-
 
 ## Output locations
 
-- Operators: `src/main/java/dev/ds_co/flink/streaming/api/operators/KeyedMultiInputOperator{N}.java` for N = 4..25.
+- Operators: `src/main/java/dev/ds_co/flink/streaming/api/operators/KeyedMultiInputOperator{N}.java` for N = 3..25.
 - Harnesses: `src/test/java/dev/ds_co/flink/streaming/util/testing/KeyedMultiInputOperatorTestHarness{N}.java` for N = 3..25.
 
 Do not hand-edit generated files; change the scripts instead.

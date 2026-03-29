@@ -11,7 +11,7 @@ class GenerateOperators {
     Path outDir =
         root.resolve("src/main/java/dev/ds_co/flink/streaming/api/operators");
     Files.createDirectories(outDir);
-    for (int n = 4; n <= 25; n++) {
+    for (int n = 3; n <= 25; n++) {
       String content = generateOperator(n);
       Path out = outDir.resolve("KeyedMultiInputOperator" + n + ".java");
       Files.writeString(out, content, StandardCharsets.UTF_8);

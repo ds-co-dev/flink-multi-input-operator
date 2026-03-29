@@ -35,7 +35,7 @@ Use this file as agent guidance, not as full project documentation. Keep it shor
 
 ## Generated KeyedMultiInput sources
 
-- `KeyedMultiInputOperator4.java` through `KeyedMultiInputOperator25.java` come from `scripts/GenerateOperators.java`.
+- `KeyedMultiInputOperator3.java` through `KeyedMultiInputOperator25.java` come from `scripts/GenerateOperators.java`.
 - `KeyedMultiInputOperatorTestHarness3.java` through `KeyedMultiInputOperatorTestHarness25.java` come from `scripts/GenerateTestHarnesses.java`.
 - Do not edit those generated files by hand. Change the scripts, run `java scripts/GenerateOperators.java` and/or `java scripts/GenerateTestHarnesses.java` from the repo root, then `./mvnw spotless:apply` and `./mvnw clean verify`.
 - For the full regeneration workflow, use the project skill `codegen-keyed-multi-input` under `.cursor/skills/codegen/`.

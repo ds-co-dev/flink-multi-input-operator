@@ -1,7 +1,7 @@
 ---
 description: KeyedMultiInput generated operators and test harnesses are script output
 globs:
-  - "**/KeyedMultiInputOperator[4-9].java"
+  - "**/KeyedMultiInputOperator[3-9].java"
   - "**/KeyedMultiInputOperator1*.java"
   - "**/KeyedMultiInputOperator2*.java"
   - "**/KeyedMultiInputOperatorTestHarness*.java"
