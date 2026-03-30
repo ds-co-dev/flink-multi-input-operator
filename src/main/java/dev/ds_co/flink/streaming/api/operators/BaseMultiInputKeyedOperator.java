@@ -67,6 +67,10 @@ public abstract class BaseMultiInputKeyedOperator<OUT> extends AbstractStreamOpe
       return (K) BaseMultiInputKeyedOperator.this.getCurrentKey();
     }
 
+    public long currentProcessingTime() {
+      return timerService.currentProcessingTime();
+    }
+
     public void registerProcessingTimeTimer(long timestamp) {
       timerService.registerProcessingTimeTimer(VoidNamespace.INSTANCE, timestamp);
     }
