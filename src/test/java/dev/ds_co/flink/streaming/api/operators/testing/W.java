@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class X implements Serializable {
+public class W implements Serializable {
   private String key;
-  private int x;
+  private int w;
 }

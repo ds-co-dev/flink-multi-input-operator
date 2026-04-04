@@ -19,7 +19,7 @@ import org.apache.flink.test.streaming.runtime.util.TestListResultSink;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class MultiInputITCase {
+class MultiInputIntegrationTest {
 
   StreamExecutionEnvironment env;
   DataStream<X> xs;
