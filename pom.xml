@@ -9,7 +9,22 @@
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>flink-multi-input-operator</name>
-    <description>Keyed multi-input operator for Apache Flink streaming jobs</description>
+    <description>DataStream-level keyed multi-input operator for Apache Flink, companion to FLINK-39131</description>
+    <url>https://github.com/Denstden/flink-multi-input-operator</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/Denstden/flink-multi-input-operator</url>
+        <connection>scm:git:https://github.com/Denstden/flink-multi-input-operator.git</connection>
+        <developerConnection>scm:git:git@github.com:Denstden/flink-multi-input-operator.git</developerConnection>
+    </scm>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
