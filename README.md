@@ -63,6 +63,10 @@ To auto-fix formatting:
 
 ## CI
 
-GitHub Actions runs tests on every push/PR. Publish workflow deploys to GitHub Packages when a release is created.
+GitHub Actions runs tests on every push/PR. The publish workflow stages artifacts locally and publishes them with JReleaser when a `v*` tag is pushed.
 
-For manual publish: configure `~/.m2/settings.xml` with PAT (scopes: read:packages, write:packages, repo) and run `./mvnw deploy`.
+For manual release validation:
+
+    ./mvnw -B clean verify
+    ./mvnw -B -Ppublication deploy -DskipTests
+    ./mvnw -B jreleaser:config

@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dev.dss-co</groupId>
+    <groupId>dev.ds-co</groupId>
     <artifactId>flink-multi-input-operator</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
     <name>flink-multi-input-operator</name>
     <description>DataStream-level keyed multi-input operator for Apache Flink, companion to FLINK-39131</description>
-    <url>https://github.com/Denstden/flink-multi-input-operator</url>
+    <url>https://github.com/ds-co-dev/flink-multi-input-operator</url>
 
     <licenses>
         <license>
@@ -20,10 +20,21 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>ds-co</id>
+            <name>DS-CO Team</name>
+            <email>hello@ds-co.dev</email>
+            <organization>DS-CO</organization>
+            <organizationUrl>https://ds-co.dev</organizationUrl>
+        </developer>
+    </developers>
+
     <scm>
-        <url>https://github.com/Denstden/flink-multi-input-operator</url>
-        <connection>scm:git:https://github.com/Denstden/flink-multi-input-operator.git</connection>
-        <developerConnection>scm:git:git@github.com:Denstden/flink-multi-input-operator.git</developerConnection>
+        <connection>scm:git:https://github.com/ds-co-dev/flink-multi-input-operator.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/ds-co-dev/flink-multi-input-operator.git</developerConnection>
+        <url>https://github.com/ds-co-dev/flink-multi-input-operator</url>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
@@ -72,14 +83,6 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/denstden/flink-multi-input-operator</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <plugins>
@@ -134,6 +137,80 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jreleaser</groupId>
+                <artifactId>jreleaser-maven-plugin</artifactId>
+                <version>1.24.0</version>
+                <configuration>
+                    <jreleaser>
+                        <release>
+                            <github>
+                                <owner>ds-co-dev</owner>
+                                <name>flink-multi-input-operator</name>
+                                <tagName>v{{projectVersion}}</tagName>
+                                <skipTag>true</skipTag>
+                            </github>
+                        </release>
+                        <signing>
+                            <pgp>
+                                <active>ALWAYS</active>
+                                <armored>true</armored>
+                            </pgp>
+                        </signing>
+                        <deploy>
+                            <maven>
+                                <mavenCentral>
+                                    <sonatype>
+                                        <active>RELEASE</active>
+                                        <url>https://central.sonatype.com/api/v1/publisher</url>
+                                        <stagingRepositories>target/staging-deploy</stagingRepositories>
+                                    </sonatype>
+                                </mavenCentral>
+                            </maven>
+                        </deploy>
+                    </jreleaser>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>publication</id>
+            <properties>
+                <altDeploymentRepository>local::file:./target/staging-deploy</altDeploymentRepository>
+            </properties>
+            <build>
+                <defaultGoal>deploy</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.6.3</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
