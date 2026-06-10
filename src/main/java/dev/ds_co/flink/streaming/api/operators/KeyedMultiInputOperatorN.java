@@ -6,15 +6,21 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.util.Collector;
 
 /**
- * Generic keyed multi-input operator for N inputs (N >= 1).
+ * Generic keyed multi-input operator for N inputs (N &gt;= 1).
  *
  * <p>Subclasses only implement:
  *
- * <p>protected abstract void processElement( int inputIndex, Object value, Context ctx, Collector
- * out) throws Exception;
+ * <pre>{@code
+ * protected abstract void processElement(
+ *     int inputIndex, Object value, Context ctx, Collector<OUT> out) throws Exception;
+ * }</pre>
  *
- * <p>The base class will: - create one AbstractInput per input index [1...N] - wire key context +
- * Context + Collector
+ * <p>The base class will:
+ *
+ * <ul>
+ *   <li>create one AbstractInput per input index [1...N]
+ *   <li>wire key context, Context, and Collector
+ * </ul>
  */
 public abstract class KeyedMultiInputOperatorN<OUT> extends BaseMultiInputKeyedOperator<OUT> {
 
@@ -47,6 +53,7 @@ public abstract class KeyedMultiInputOperatorN<OUT> extends BaseMultiInputKeyedO
    * @param value the element from that input (subclass casts as needed)
    * @param ctx CoProcess-like context
    * @param out collector (TimestampedCollector under the hood)
+   * @throws Exception if processing fails
    */
   protected abstract void processElement(
       int inputIndex, Object value, Context ctx, Collector<OUT> out) throws Exception;

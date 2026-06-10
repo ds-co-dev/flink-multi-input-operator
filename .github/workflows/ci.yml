@@ -15,3 +15,5 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - run: ./mvnw -B clean verify
+      - name: Validate publication artifacts
+        run: ./mvnw -B -Ppublication package -DskipTests
