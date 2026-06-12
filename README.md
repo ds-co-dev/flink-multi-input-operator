@@ -14,7 +14,9 @@ Use *at your own risk*! 😀
 
 This library is a companion implementation for [FLINK-39131: Multi-Input Processors](https://issues.apache.org/jira/browse/FLINK-39131).
 
-Its goal is to provide a DataStream-level primitive for processing more than two keyed inputs within a single operator. In practice, this is useful for stateful multi-stream patterns such as multi-way joins, where expressing the logic as a chain of binary operators can create excessive intermediate state.
+Its goal is to provide multi-way processing _à la_ `CoProcessFunction`, just for `N > 2`: a DataStream-level primitive for processing more than two keyed inputs within a single operator. In practice, this is useful for stateful multi-stream patterns such as multi-way joins, where expressing the logic as a chain of binary operators can create excessive intermediate state.
+
+For a longer motivation and walkthrough, see [Multi-Way Joins](https://ds-co.dev/blog/multi-way-joins-cybernetically-enhanced/).
 
 ## Background
 
@@ -36,6 +38,121 @@ This project is intentionally focused on a small, explicit abstraction: a keyed 
 It is not an Apache Flink module, and it does not aim to mirror the whole internal Operator API. Instead, it packages a higher-level primitive that is easier to use in application code while staying aligned with the motivation behind FLINK-39131.
 
 It is also adjacent to earlier discussions such as [FLIP-17: Side Inputs for DataStream API](https://cwiki.apache.org/confluence/display/FLINK/FLIP-17%3A+Side+Inputs+for+DataStream+API), but it targets a different use case: multiple equally important inputs processed symmetrically within one keyed operator, rather than a main input augmented by side inputs.
+
+## Approach
+
+The implementation relies on low-level, but public, Flink classes to overcome the current limitations of the DataStream API co-processors.
+
+From a user's perspective, a `KeyedMultiInputOperatorBuilder` does the necessary wiring so the operator feels closer to a `(Keyed)MultiProcessFunction` than to Flink's lower-level Operator API.
+
+For defining multi-way operators, this repository provides typed operator base classes:
+
+`KeyedMultiInputOperator3` through `KeyedMultiInputOperator25` each target a specific number of inputs and keep the operator API typed per input. These classes are generated up to `N=25`, as typically done in these cases, e.g. for [tuples](https://github.com/apache/flink/tree/master/flink-core-api/src/main/java/org/apache/flink/api/java/tuple).
+
+```mermaid
+classDiagram
+direction TB
+    class BaseMultiInputKeyedOperator
+
+    class KeyedMultiInputOperator3
+
+    class KeyedThreeInputOperator {
+        X x
+        Y y
+        Z z
+        processElement1(X, Context, Collector)
+        processElement2(Y, Context, Collector)
+        processElement3(Z, Context, Collector)
+    }
+
+    class KeyedMultiInputOperatorBuilder {
+        addInput(stream, keySelector)
+        addInput(keyedStream)
+        build()
+    }
+
+    class KeyedMultiInputOperator25
+
+    class MultiInputOperatorFactory {
+        createStreamOperator(params)
+    }
+
+    class Out
+    class MoreOperators
+
+    class KeyedTwentyFiveInputOperator {
+        processElement1(I1, Context, Collector)
+        processElement25(I25, Context, Collector)
+    }
+
+    KeyedMultiInputOperatorBuilder ..> MultiInputOperatorFactory
+    BaseMultiInputKeyedOperator <|-- KeyedMultiInputOperator3
+    KeyedMultiInputOperator3 <|-- KeyedThreeInputOperator
+    BaseMultiInputKeyedOperator <|-- MoreOperators
+    BaseMultiInputKeyedOperator <|-- KeyedMultiInputOperator25
+    KeyedMultiInputOperator25 <|-- KeyedTwentyFiveInputOperator
+    KeyedThreeInputOperator ..> Out
+    KeyedTwentyFiveInputOperator ..> Out
+```
+
+## Use This Library
+
+The published artifact is available on [Maven Central](https://central.sonatype.com/artifact/dev.ds-co/flink-multi-input-operator). Add it to your Flink application with:
+
+```xml
+<dependency>
+    <groupId>dev.ds-co</groupId>
+    <artifactId>flink-multi-input-operator</artifactId>
+    <version>x.y.z</version>
+</dependency>
+```
+
+## Basic Usage Example
+
+The usage would be as follows (`N=3`):
+
+```java
+KeyedMultiInputOperatorBuilder<String, Out> builder =
+    new KeyedMultiInputOperatorBuilder<>(
+        env,
+        KeyedThreeInputOperator.class,
+        TypeInformation.of(Out.class),
+        Types.STRING
+    );
+
+builder
+    .addInput(xs, X::getKey)
+    .addInput(ys, Y::getKey)
+    .addInput(zs, Z::getKey);
+
+DataStream<Out> joined = builder.build("xyz-join");
+```
+
+where the user-defined operator would have one callback for each input channel:
+
+```java
+public class KeyedThreeInputOperator extends KeyedMultiInputOperator3<X, Y, Z, Out> {
+  @Override
+  protected void processElement1(X x, Context ctx, Collector<Out> out) throws Exception {
+    lastX.update(x.getX());
+    join(ctx, out);
+  }
+
+  @Override
+  protected void processElement2(Y y, Context ctx, Collector<Out> out) throws Exception {
+    lastY.update(y.getY());
+    join(ctx, out);
+  }
+
+  @Override
+  protected void processElement3(Z z, Context ctx, Collector<Out> out) throws Exception {
+    lastZ.update(z.getZ());
+    join(ctx, out);
+  }
+}
+```
+
+So, overall, this feels exactly like a `KeyedCoProcessFunction`, just for `N > 2`.
 
 ## Build
 
